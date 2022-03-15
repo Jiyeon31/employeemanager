@@ -20,6 +20,9 @@
   ## Usage 
   
   you can use this whenever you want to manage your employees
+  
+  ## Walkthrough video
+  
     
   ## License
     
