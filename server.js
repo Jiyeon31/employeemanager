@@ -215,7 +215,7 @@ const viewAllEmployees = () => {
     .then(answer => {
       const addEmployee = [answer.firstName, answer.lastName];
       const roleSql = `SELECT roles.id, roles.title FROM roles`;
-      connsction.query(roleSql, (error, data) => {
+      connection.query(roleSql, (error, data) => {
         if (error) throw error;
         const roleList = data.map(({ id, title }) => ({ name: title, value: id}));
         inquirer.prompt([
