@@ -23,6 +23,7 @@
   
   ## Walkthrough video
   
+  (https://github.com/Jiyeon31/employeemanager/blob/main/walkthroughvideo/employeemanager.mp4)
     
   ## License
     
