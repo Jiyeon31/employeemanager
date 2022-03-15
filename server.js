@@ -46,7 +46,7 @@ const promptQuestions = [
       viewAllEmployees();
     }
     else if (answers.action == 'Add a department') {
-      addADepartment();
+      addingDepartment();
     }
     else if (answers.action == 'Add a role') {
       addARole();
@@ -64,59 +64,62 @@ const promptQuestions = [
 };
 
 const viewAllDepartments = () => {
-  const sql =  `SELECT departments.id AS id, departments.depName AS departments FROM departments;`; 
-  connection.query(sql, (error, response) => {
-    if (error) throw error;
+  const sql =  "SELECT departments.id AS id, departments.depname AS departments FROM departments;"; 
+  connection.query(sql, (err, res) => {
+    if (err) throw err;
     console.log(`================`);
     console.log(`Departments List`);
     console.log(`================`);
-    console.table(response);
+    console.table(res);
     commitPrompt();
   });
 };
 
 const viewAllRoles = () => {
-    console.log(`==========`);
-    console.log(`Roles List`);
-    console.log(`==========`);
-    const sql = `SELECT roles.id, roles.title, departments.depName AS departments FROM roles;
-    INNER JOIN departments ON roles.department_id = departments.id;`;
+    const sql = `SELECT roles.id, roles.title, roles.salary, departments.depname AS departments FROM roles
+    INNER JOIN departments ON departments.id = roles.department_id;`;
     connection.query(sql, (err, res) => {
       if (err) throw err;
-      res.forEach((role) => {console.log(role.title);});
+      console.log(`==========`);
+      console.log(`Roles List`);
+      console.log(`==========`);
+      console.table(res);
       commitPrompt();
     })
   }
 const viewAllEmployees = () => {
-    let sql =     `SELECT employees.id, 
+    const sql =   `SELECT employees.id, 
                   employees.first_name, 
                   employees.last_name, 
                   roles.title, 
-                  departments.depName AS 'departments', 
+                  departments.depname AS 'departments', 
                   roles.salary
                   FROM employees, roles, departments
                   WHERE departments.id = roles.department_id 
                   AND roles.id = employees.role_id
                   ORDER BY employees.id ASC`;
-    connection.query(sql, (err, response) => {
-      if (err) throw error;
+    connection.query(sql, (err, res) => {
+      if (err) throw err;
       console.log(`==============`);
       console.log(`Employees List`);
       console.log(`==============`);
-      console.log(response);
+      console.table(res);
       commitPrompt();
     })
   };
-  const addADepartment = () => {
-    inquirer.prompt([
+  const addADepartment =
+    [
       {
         name: 'newDepartment',
         type: 'input',
         message: 'Enter new department name',
       }
-    ])
+    ]
+
+  const addingDepartment = () => {
+    inquirer.prompt(addADepartment)
     .then((answer) => {
-      let sql = `INSERT INTO departments(depName) VALUES (?)`;
+      let sql = `INSERT INTO departments(depname) VALUES (?)`;
       connection.query(sql, answer.newDepartment, (err, response) => {
         if (err) throw err;
         console.log(`===============================`);
@@ -131,7 +134,7 @@ const viewAllEmployees = () => {
     connection.query(sql, (error, response) => {
       if (error) throw error;
       let departmentArray = [];
-      response.forEach((departments) => {departmentArray.push(departments.depName)});
+      response.forEach((departments) => {departmentArray.push(departments.depname)});
       departmentArray.push('Choose your department');
       inquirer.prompt([
         {
@@ -165,7 +168,7 @@ const viewAllEmployees = () => {
         let aNewRole = answer.newRole;
         let departmentId;
         response.forEach((departments) => {
-          if (departmentData.yourDepartment === departments.depName) {departmentId = departments.id;}
+          if (departmentData.yourDepartment === departments.depname) {departmentId = departments.id;}
         });
         let sql = `INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`;
         let roleArray = [aNewRole, answer.salary, departmentId];
@@ -277,7 +280,7 @@ const viewAllEmployees = () => {
               name: 'chooseRole',
               type: 'list',
               message: 'Enter a new role',
-              choices: rolesArrau
+              choices: rolesArray
             }
           ])
           .then((answer) => {
@@ -302,6 +305,7 @@ const viewAllEmployees = () => {
               console.log(`=================================`);
               console.log(`You just updated employee\'s role`);
               console.log(`=================================`);
+              viewAllEmployees();
               commitPrompt();
             }
           );

@@ -4,7 +4,7 @@ USE employeelist;
 
 CREATE TABLE departments (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    depName VARCHAR(30) NOT NULL
+    depname VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE roles (
